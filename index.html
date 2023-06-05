@@ -1,0 +1,59 @@
+<html>
+    <body>
+        <div id="canvas" style="width:512px; height:200px; background-color: brown;">
+        </div>
+        <div id="result"></div>
+    </body>
+  <script>
+    var diffs = [];
+    const result = document.getElementById("result");
+    const canvas = document.getElementById("canvas");
+    
+    function average(nums) {
+        return nums.reduce((a, b) => (a + b)) / nums.length;
+    }
+
+    function printResults() {
+        result.innerHTML = "Average: " + average(diffs);
+    }
+
+    function clear() {
+        diffs = [];
+        result.innerHTML = "";
+    }
+
+    function pointermove(event) {
+        event.preventDefault();
+        const coalesced = event.getCoalescedEvents();
+        const timeStamps = coalesced.map((x, _) => x.timeStamp);
+        if (timeStamps.length >= 2) {
+            var diffTimestamps =  timeStamps.map((x, i) => x - timeStamps[i-1]);
+            diffTimestamps.shift();
+            
+            diffs.push.apply(diffs, diffTimestamps);
+        }
+
+        if (diffs.length > 0) {
+            printResults();
+        }
+    }
+
+    function pointerup(event) {
+        event.preventDefault();
+        
+        clear();
+    }
+
+    function pointerleave(event) {
+        event.preventDefault();
+        
+        clear();
+    }
+
+    
+    canvas.addEventListener("pointermove", pointermove, false);
+    canvas.addEventListener("pointerup", pointerup, false);
+    canvas.addEventListener("pointerleave", pointerleave, false);
+
+  </script>
+</html>
