@@ -22,8 +22,7 @@
         result.innerHTML = "";
     }
 
-    function pointermove(event) {
-        event.preventDefault();
+    function move() {
         const coalesced = event.getCoalescedEvents();
         const timeStamps = coalesced.map((x, _) => x.timeStamp);
         if (timeStamps.length >= 2) {
@@ -38,20 +37,29 @@
         }
     }
 
+    function pointermove(event) {
+        event.preventDefault();
+        move();
+    }
+
+    function touchmove(event) {
+        event.preventDefault();
+        move();
+    }
+
     function pointerup(event) {
         event.preventDefault();
-        
         clear();
     }
 
     function pointerleave(event) {
         event.preventDefault();
-        
         clear();
     }
 
     
     canvas.addEventListener("pointermove", pointermove, false);
+    canvas.addEventListener("touchmove", touchmove, false);
     canvas.addEventListener("pointerup", pointerup, false);
     canvas.addEventListener("pointerleave", pointerleave, false);
 
