@@ -18,7 +18,9 @@
     }
 
     function printResults() {
-        touchReportRate.innerHTML = "Average Touch Report Rate: " + average(diffs);
+        const touchReportRateMs = average(diffs);
+        const touchReportRateHz = 1000 / touchReportRateMs;
+        touchReportRate.innerHTML = "Average Touch Report Rate: " + touchReportRateMs.toFixed(2) + "ms (" + touchReportRateHz.toFixed(2) + "Hz)";
     }
 
     function clear() {
@@ -72,7 +74,7 @@
         t.unshift(now);
         if (t.length > 10) {
             var t0 = t.pop();
-            var fps = Math.floor(1000 * 10 / (now - t0));
+            var fps = (1000 * 10 / (now - t0)).toFixed(2);
             screenRefreshRate.innerHTML = 'Screen refresh rate: ' + fps + ' fps';
         }
 
