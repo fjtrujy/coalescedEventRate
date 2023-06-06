@@ -6,7 +6,9 @@
         <div id="screenRefreshRate"></div>
     </body>
   <script>
-    var diffs = [];
+    var diffsCoalesced = [];
+    var maxCoalesced = 1000000;
+    var maxFPS = 0;
     var t = [];
 
     const touchReportRate = document.getElementById("touchReportRate");
@@ -18,13 +20,15 @@
     }
 
     function printResults() {
-        const touchReportRateMs = average(diffs);
+        const touchReportRateMs = average(diffsCoalesced);
+        maxCoalesced = Math.min(maxCoalesced, touchReportRateMs);
         const touchReportRateHz = 1000 / touchReportRateMs;
-        touchReportRate.innerHTML = "Average Touch Report Rate: " + touchReportRateMs.toFixed(2) + "ms (" + touchReportRateHz.toFixed(2) + "Hz)";
+        touchReportRate.innerHTML = "Average Touch Report Rate: " + touchReportRateMs.toFixed(2) + "ms (" + touchReportRateHz.toFixed(2) + "Hz), max: " + maxCoalesced.toFixed(2) + "ms (" + (1000 / maxCoalesced).toFixed(2) + "Hz)";
     }
 
     function clear() {
-        diffs = [];
+        diffsCoalesced = [];
+        maxCoalesced = 1000000;
         touchReportRate.innerHTML = "<br>";
     }
 
@@ -35,10 +39,10 @@
             var diffTimestamps =  timeStamps.map((x, i) => x - timeStamps[i-1]);
             diffTimestamps.shift();
             
-            diffs.push.apply(diffs, diffTimestamps);
+            diffsCoalesced.push.apply(diffsCoalesced, diffTimestamps);
         }
 
-        if (diffs.length > 0) {
+        if (diffsCoalesced.length > 0) {
             printResults();
         }
     }
@@ -75,7 +79,8 @@
         if (t.length > 10) {
             var t0 = t.pop();
             var fps = (1000 * 10 / (now - t0)).toFixed(2);
-            screenRefreshRate.innerHTML = 'Screen refresh rate: ' + fps + ' fps';
+            maxFPS = Math.max(maxFPS, fps);
+            screenRefreshRate.innerHTML = 'Screen refresh rate: ' + fps + ' fps, max: ' + maxFPS + ' fps';
         }
 
         window.requestAnimationFrame(animate);
